@@ -32,6 +32,7 @@ public class TestCentroVacunacion {
 		centro.ingresarVacunas("Pfizer", 10,new Fecha(20,3,2021));
 		centro.ingresarVacunas("Moderna", 10,new Fecha(20,3,2021));
 		centro.ingresarVacunas("Sinopharm", 10,new Fecha(20,3,2021));
+		
 		System.out.println("Vacunas son = " + centro.vacunasDisponibles());
 		assertEquals(50, centro.vacunasDisponibles());
 	}
