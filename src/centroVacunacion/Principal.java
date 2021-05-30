@@ -13,6 +13,8 @@ public class Principal {
 
 		centro.ingresarVacunas("Moderna", 10, new Fecha(15,5,2021));
 		centro.ingresarVacunas("Pfizer", 10, new Fecha(15,5,2021));
+
+
 		
 
 		centro.inscribirPersona(34701000, new Fecha(1, 5, 1989), false, false);
@@ -35,7 +37,7 @@ public class Principal {
 		//----------------prueba---------------
 		System.out.println("Vacunas disponibles : " + centro.vacunasDisponibles());
 		System.out.println("chaboncitos inscriptos : " + centro.listaDeEspera().size());
-		System.out.println("Vacunas disponibles Moderna : " + centro.vacunasDisponibles("Moderna"));
+
 		//----------------------------------------
 		System.out.println("------------- Centro --------------");
 		System.out.println(centro);

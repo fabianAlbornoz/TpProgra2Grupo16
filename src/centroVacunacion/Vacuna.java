@@ -4,16 +4,17 @@ public class Vacuna {
 	private String nombreVacuna;
 	private int cantidad;
 	private Fecha fechaIngreso;
+	private Fecha Vencimiento;
 	
 	
 	public Vacuna(String nombreVacuna, int cantidad, Fecha fechaIngreso) {
 		this.nombreVacuna = nombreVacuna;
 		this.cantidad = cantidad;
 		this.fechaIngreso = fechaIngreso;
-
-	
+		this.Vencimiento = null;
+		
 	}
-	
+		
 	public String getNombreVacuna() {
 		return nombreVacuna;
 	}
@@ -37,6 +38,16 @@ public class Vacuna {
 	public void setFechaIngreso(Fecha fechaIngreso) {
 		this.fechaIngreso = fechaIngreso;
 	}
+	
+	public Fecha getVencimiento() {
+		return Vencimiento;
+	}
+
+	public void setVencimiento(Fecha vencimiento) {
+		Vencimiento = vencimiento;
+	}
+
+
 	
 
 }

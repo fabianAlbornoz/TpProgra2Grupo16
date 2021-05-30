@@ -14,8 +14,7 @@ public class CentroVacunacion {
 	private int CapacidadXdia;
 	private ArrayList<Persona> Inscriptos;
 	private ArrayList<Vacuna> VacunasDisponibles;
-	private HashMap<Persona, Vacuna> Turno;
-	private LinkedList CalendarioVacunacion;
+	private LinkedList<Turno> CalendarioVacunacion;
 	private LinkedList Reporte;
 	private Vacuna vacuna;
 	
@@ -30,11 +29,10 @@ public class CentroVacunacion {
 		this.CapacidadXdia = CapacidadXdia;
 		this.Inscriptos = new ArrayList();
 		this.VacunasDisponibles = new ArrayList();
-		this.Turno = new HashMap();
-		this.CalendarioVacunacion = new LinkedList();
+		this.CalendarioVacunacion = new LinkedList<Turno>();
 		this.Reporte = new LinkedList();
 		this.vacuna = new Vacuna(null, 0 , null);
-		
+
 	}
 	
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
@@ -48,8 +46,14 @@ public class CentroVacunacion {
 		
 		if (cantidad <= 0) {
 			try {
-				fail("No se puede ingresar valores negativos");
+				fail("No se puede ingresar valores cero o negativos");
 			} catch (RuntimeException e) { }
+		}
+		
+		if (!fechaIngreso.anterior(Fecha.hoy())) {
+			try {
+				fail("La fecha es Posterior del dia de hoy");
+			} catch (RuntimeException e) { }			
 		}
 		
 		if (nombreVacuna.equals("Sputnik")) {
@@ -57,14 +61,26 @@ public class CentroVacunacion {
 			 SeGuardo = VacunasDisponibles.add(nuevaVacuna);
 		}
 		
-		if (nombreVacuna.equals("Pzifer")) {
-			Vacuna nuevaVacuna = new Pzifer(nombreVacuna, cantidad, fechaIngreso);
+		if (nombreVacuna.equals("Pfizer")) {
+			Vacuna nuevaVacuna = new Pfizer(nombreVacuna, cantidad, fechaIngreso);
 			SeGuardo = VacunasDisponibles.add(nuevaVacuna);
+			Fecha facha = fechaIngreso;
+			for(int i = 0; i <=30; i++) {
+				facha.avanzarUnDia();
+			}
+			nuevaVacuna.setVencimiento(facha);
+			
 		}
 		
 		if (nombreVacuna.equals("Moderna")) {
-			SeGuardo = VacunasDisponibles.add(new Moderna(nombreVacuna, cantidad, fechaIngreso));
-		}
+			Vacuna nuevaVacuna = new Moderna(nombreVacuna, cantidad, fechaIngreso);			
+			SeGuardo = VacunasDisponibles.add(nuevaVacuna);
+			Fecha facha = fechaIngreso;
+			for(int i = 0; i <=60; i++) {
+				facha.avanzarUnDia();
+			}
+			nuevaVacuna.setVencimiento(facha);
+		}	
 		
 		if (nombreVacuna.equals("Sinopharm")) {
 			Vacuna nuevaVacuna = new Sinopharm(nombreVacuna, cantidad, fechaIngreso);
@@ -82,8 +98,8 @@ public class CentroVacunacion {
 				fail("El nombre no pertenece a una vacuna admitida");
 			} catch (RuntimeException e) { }
 		}
-		
-		vacuna.setCantidad(vacuna.getCantidad()+cantidad);
+		else
+			vacuna.setCantidad(vacuna.getCantidad()+cantidad);
 	
 
 	}
@@ -152,7 +168,7 @@ public class CentroVacunacion {
 				Inscribido = true;
 			}
 		}
-		while (edad>=60 && !Inscribido && i < Inscriptos.size()) {
+ 		while (edad>=60 && !Inscribido && i < Inscriptos.size()) {
 			if (Inscriptos.get(i).getEdad()>=60 || Inscriptos.get(i).isEsEmpleadoSalud())
 				i++;
 			if(Inscriptos.get(i).isTienePadecimientos()) {
@@ -180,7 +196,7 @@ public class CentroVacunacion {
 
 	/*** Devuelve una lista con los DNI de todos los inscriptos que no se vacunaron
 	y que no tienen turno asignado.*
-	Si no quedan inscriptos sin vacunas debe devolveruna lista vacía.*/
+	Si no quedan inscriptos sin vacunas debe devolver una lista vacía.*/
 	public LinkedList<Integer> listaDeEspera(){
 		LinkedList<Integer> lista = new LinkedList<Integer>();
 		for (Persona lape: Inscriptos) {
@@ -189,15 +205,53 @@ public class CentroVacunacion {
 		return lista;
 	}
 	
-	/*** Primero se verifica si hay turnos vencidos. En casode haber turnos* vencidos, la persona que no asistió al turno debeser borrada del sistema* y la vacuna reservada debe volver a estar disponible.*
-	* Segundo, se deben verificar si hay vacunas vencidas y quitarlas del sistema.**
-	*  Por último, se procede a asignar los turnos a partirde la fecha inicial* 
-	*  recibida según lo especificado en la 1ra parte.* 
-	*  Cada vez que se registra un nuevo turno, la vacunadestinada a esa persona* 
-	*  dejará de estar disponible. Dado que estará reservadapara ser aplicada*
-	*   el día del turno. */
+	/*** Primero se verifica si hay turnos vencidos. En caso de haber turnos
+	vencidos, la persona que no asistió al turno debe ser borrada del sistema
+	y la vacuna reservada debe volver a estar disponible.
+	* Segundo, se deben verificar si hay vacunas vencidas y quitarlas del sistema.
+	*  Por último, se procede a asignar los turnos a partirde la fecha inicial 
+	recibida según lo especificado en la 1ra parte.* 
+	Cada vez que se registra un nuevo turno, la vacuna destinada a esa persona 
+	dejará de estar disponible. Dado que estará reservada para ser aplicada
+	el día del turno. */
 	public void generarTurnos(Fecha fechaInicial) {
-		
+
+		BorrarTurnoVencidos(fechaInicial);
+
+		BorrarVacunasVencidas();
+
+		int i = 0;
+		int Cupos = 0;
+		while(i < Inscriptos.size() && Inscriptos.size() != 0 && VacunasDisponibles.size()!= 0) {
+			if(Inscriptos.get(i).getEdad() >= 60) {
+				if (TurnoMAyor60(Inscriptos.get(i), fechaInicial))
+					Cupos++;
+			}
+			else {
+					int j = 0;
+					boolean NoVence = false;
+					//Verifica que la fecha del turno sea menor a la del vencimiento de la vacuna Moderna
+					while(j <VacunasDisponibles.size() && !NoVence && VacunasDisponibles.get(j).getNombreVacuna().equals("Moderna")) {
+							if(!fechaInicial.posterior(VacunasDisponibles.get(j).getVencimiento())) {
+								NoVence = true;
+						}
+						j++;					
+					}
+					
+					if (j <VacunasDisponibles.size() ) {
+						CalendarioVacunacion.add(new Turno(Inscriptos.get(i), VacunasDisponibles.get(0),fechaInicial));
+						CambiarContVacuna(j);
+						vacuna.setCantidad(vacuna.getCantidad()-1);
+						Cupos++;
+					}
+				}
+			if(Cupos == CapacidadXdia) {
+				fechaInicial.avanzarUnDia();
+				Cupos = 0;
+			}
+			
+			i++;
+		}
 	}
 
 	/*** Devuelve una lista con los dni de las personas quetienen turno asignado* 
@@ -233,5 +287,63 @@ public class CentroVacunacion {
 		Map<String, Integer> coso = new HashMap<String, Integer>();
 		return coso;
 	}
+	
+	// Borra el tuno y agrega Vacuna al stock al principio de la lista
+	private void BorrarTurnoVencidos(Fecha FechaInicial) {
+		Iterator<Turno> Iterador= CalendarioVacunacion.iterator();
+		while(Iterador.hasNext()) {
+			Turno T = (Turno) Iterador.next();
+			if (T.getFecha().posterior(FechaInicial))
+				VacunasDisponibles.add(0,T.getVacuna());
+				Iterador.remove();
+		}
+		
+		
+	}
+	
+	private void BorrarVacunasVencidas(){
+		Iterator<Vacuna> Iterador= VacunasDisponibles.iterator();
+		while(Iterador.hasNext()) {
+			Vacuna V = (Vacuna) Iterador.next();
+			if (V.getNombreVacuna().equals("pfizer") && V.getVencimiento().anterior(Fecha.hoy())) {
+				Iterador.remove();
+			}
+			if (V.getNombreVacuna().equals("Moderna") && V.getVencimiento().anterior(Fecha.hoy())) {
+				Iterador.remove();
+			}
+		}
+	}
+	private boolean TurnoMAyor60(Persona persona, Fecha fechainicial) {
+		int j=0; 
+		boolean SeAgrego = false;
+		while(j < VacunasDisponibles.size() && !SeAgrego) {
+				if(VacunasDisponibles.get(j).getNombreVacuna().equals("Pfizer") && VacunasDisponibles.get(j).getVencimiento().posterior(fechainicial)) {
+					CalendarioVacunacion.add(new Turno(Inscriptos.get(j), VacunasDisponibles.get(j), fechainicial));
+					CambiarContVacuna(j);
+					VacunasDisponibles.get(j).setCantidad(VacunasDisponibles.get(j).getCantidad()-1);
+					vacuna.setCantidad(vacuna.getCantidad()-1);
+					SeAgrego = true;
 
+				}
+				if(VacunasDisponibles.get(j).getNombreVacuna().equals("Sputnik")) {
+					CalendarioVacunacion.add(new Turno(Inscriptos.get(j), VacunasDisponibles.get(j),fechainicial));
+					CambiarContVacuna(j);
+					VacunasDisponibles.get(j).setCantidad(VacunasDisponibles.get(j).getCantidad()-1);
+					vacuna.setCantidad(vacuna.getCantidad()-1);
+					SeAgrego = true;
+				}
+				j++;
+		}
+		return SeAgrego;
+	}
+		
+	
+		
+	// Disminuye 1 la cantidad de Vacuna.Si la cantidad es 0 borra de la lista
+	private void CambiarContVacuna(int pos) {
+		VacunasDisponibles.get(pos).setCantidad(VacunasDisponibles.get(pos).getCantidad()-1);
+		if (VacunasDisponibles.get(pos).getCantidad() == 0)
+			VacunasDisponibles.remove(pos);
+	}
+	
 }
