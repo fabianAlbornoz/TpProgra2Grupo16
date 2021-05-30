@@ -44,15 +44,18 @@ public class CentroVacunacion {
 		
 		boolean SeGuardo = false;
 		
-		if (cantidad <= 0) {
-			try {
-				fail("No se puede ingresar valores cero o negativos");
-			} catch (RuntimeException e) { }
-		}
+
+		try {
+			if (cantidad <= 0) 
+			fail("No se puede ingresar valores cero o negativos");
+
+		} catch (RuntimeException e) { }
 		
-		if (!fechaIngreso.anterior(Fecha.hoy())) {
-			try {
-				fail("La fecha es Posterior del dia de hoy");
+		
+ {
+		try {
+			if (!fechaIngreso.anterior(Fecha.hoy()))
+			fail("La fecha es Posterior del dia de hoy");
 			} catch (RuntimeException e) { }			
 		}
 		
@@ -128,8 +131,21 @@ public class CentroVacunacion {
 	 *Si la persona ya fue vacunada, también debe generaruna excepción.*/
 	public void inscribirPersona(int dni, Fecha nacimiento,boolean tienePadecimientos,boolean esEmpleadoSalud){ //lista ordenada por prioridad
 		
+		if (tienePadecimientos && esEmpleadoSalud) {
+			try {
+				fail("Personas con padecimientos no deben trabajar sector salud");
+			} catch (RuntimeException e) { }
+		}
+
+				
 		int edad = Fecha.diferenciaAnios(Fecha.hoy() , nacimiento);
 		Persona nueva = new Persona(dni,edad,tienePadecimientos,esEmpleadoSalud);
+		
+/*		if (edad>= 60 && esEmpleadoSalud) {
+			try {
+				fail("Personas mayores 60 no deben trabajar sector salud");
+			} catch (RuntimeException e) { }
+		}*/
 		
 		if (edad< 18 || Inscriptos.contains(nueva)) {
 			try {

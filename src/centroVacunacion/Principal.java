@@ -13,6 +13,7 @@ public class Principal {
 
 		centro.ingresarVacunas("Moderna", 10, new Fecha(15,5,2021));
 		centro.ingresarVacunas("Pfizer", 10, new Fecha(15,5,2021));
+		centro.ingresarVacunas("Pfizer", 0, new Fecha(15,5,2021));
 
 
 		
