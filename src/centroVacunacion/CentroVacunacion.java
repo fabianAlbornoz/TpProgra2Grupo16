@@ -96,6 +96,7 @@ public class CentroVacunacion {
 			SeGuardo = VacunasDisponibles.add(nuevaVacuna);
 		}
 		
+		//Si el  nombre lanza una exepcion, sino agrega a la cantidad de vacunas general
 		if (!SeGuardo) {
 			try {
 				fail("El nombre no pertenece a una vacuna admitida");
@@ -107,8 +108,12 @@ public class CentroVacunacion {
 
 	}
 	
-	/*** total de vacunas disponibles no vencidas sin distinción por tipo.*/
+	/*** total de vacunas disponibles no vencidas sin distinción por tipo.
+	 *Ademas Se borrar las vacunas vencidas y se devuelve al stock las vacunas no aplicadas */
 	public int vacunasDisponibles() {
+		BorrarVacunasVencidas();
+		BorrarTurnoVencidos();
+
 		return vacuna.getCantidad();
 		
 	}
@@ -117,7 +122,6 @@ public class CentroVacunacion {
 	*vacuna especificado.*/
 	public int vacunasDisponibles(String nombreVacuna) {
 		int suma = 0;
-
 		for(Vacuna vac: VacunasDisponibles) {
 			if (vac.getNombreVacuna().equals(nombreVacuna)) {
 				suma+= vac.getCantidad();
@@ -147,17 +151,16 @@ public class CentroVacunacion {
 			} catch (RuntimeException e) { }
 		}*/
 		
-		if (edad< 18 || Inscriptos.contains(nueva)) {
-			try {
+		try {
+				if (edad< 18)
 				fail("Es Menor de 18");
 			} catch (RuntimeException e) { }
-		}
-		
-		if (Inscriptos.contains(nueva)) {
-			try {
+	
+
+		try {
+				if (Inscriptos.contains(dni))
 				fail("Ya esta inscripto");
 			} catch (RuntimeException e) { }
-		}
 		
 		int i = 0;
 		boolean Inscribido = false;
@@ -166,7 +169,10 @@ public class CentroVacunacion {
 			Inscriptos.add(nueva);
 			Inscribido = true;
 		}
-		
+		/*Se guarda por prioridad EmpleadoSalud > Mayor60 > Padecimientos > general
+		  
+		  Si la persona es emplado saludo busca en la lista el primer mayor De 60 reemplaza posicion
+		  y el resto sde mueve a la izquierda (sino hay reemplaza al siguiente en prioridad) */
 		while (esEmpleadoSalud && !Inscribido && i < Inscriptos.size()) {
 			if (Inscriptos.get(i).isEsEmpleadoSalud())
 				i++;
@@ -184,6 +190,9 @@ public class CentroVacunacion {
 				Inscribido = true;
 			}
 		}
+		
+		/*Si es mayor de 60 busca el primero con Padecimientos reemplaza posicion
+		  y el resto sde mueve a la izquierda (sino hay reemplaza al siguiente en prioridad) */
  		while (edad>=60 && !Inscribido && i < Inscriptos.size()) {
 			if (Inscriptos.get(i).getEdad()>=60 || Inscriptos.get(i).isEsEmpleadoSalud())
 				i++;
@@ -196,6 +205,9 @@ public class CentroVacunacion {
 				Inscribido = true;
 			}
 		}
+ 		
+ 		/*Si tienePadecimientos busca el primero de la poblacion en general reemplaza posicion
+		  y el resto sde mueve a la izquierda*/
 		while (tienePadecimientos && !Inscribido && i < Inscriptos.size()) {
 			if (Inscriptos.get(i).getEdad()>=60 || Inscriptos.get(i).isEsEmpleadoSalud() || Inscriptos.get(i).isTienePadecimientos())
 				i++;
@@ -204,6 +216,8 @@ public class CentroVacunacion {
 				Inscribido = true;
 			}
 		}
+		
+		//Si no cumple con ningun condicional se agrega al final
 		if(!Inscribido)
 			Inscriptos.add(nueva);
 				
@@ -232,7 +246,7 @@ public class CentroVacunacion {
 	el día del turno. */
 	public void generarTurnos(Fecha fechaInicial) {
 
-		BorrarTurnoVencidos(fechaInicial);
+		BorrarTurnoVencidos();
 
 		BorrarVacunasVencidas();
 
@@ -303,13 +317,15 @@ public class CentroVacunacion {
 		Map<String, Integer> coso = new HashMap<String, Integer>();
 		return coso;
 	}
+
+//---------------------------------- metodos de metodos -------------------------------------------------	
 	
-	// Borra el tuno y agrega Vacuna al stock al principio de la lista
-	private void BorrarTurnoVencidos(Fecha FechaInicial) {
+	// Borra el turno y agrega Vacuna al stock al principio de la lista
+	private void BorrarTurnoVencidos() {
 		Iterator<Turno> Iterador= CalendarioVacunacion.iterator();
 		while(Iterador.hasNext()) {
 			Turno T = (Turno) Iterador.next();
-			if (T.getFecha().posterior(FechaInicial))
+			if (T.getFecha().posterior(Fecha.hoy()))
 				VacunasDisponibles.add(0,T.getVacuna());
 				Iterador.remove();
 		}
@@ -317,18 +333,30 @@ public class CentroVacunacion {
 		
 	}
 	
+	/*Borra las vacunas que el vencimiento es menor a la fecha del dia de hoy
+	  Se disminuye el contador de las vacunas en general y la del nombre especifico*/
 	private void BorrarVacunasVencidas(){
+		
 		Iterator<Vacuna> Iterador= VacunasDisponibles.iterator();
+		
 		while(Iterador.hasNext()) {
 			Vacuna V = (Vacuna) Iterador.next();
 			if (V.getNombreVacuna().equals("pfizer") && V.getVencimiento().anterior(Fecha.hoy())) {
+				vacuna.setCantidad(vacuna.getCantidad()- V.getCantidad());
 				Iterador.remove();
+
 			}
 			if (V.getNombreVacuna().equals("Moderna") && V.getVencimiento().anterior(Fecha.hoy())) {
+				vacuna.setCantidad(vacuna.getCantidad()- V.getCantidad());
 				Iterador.remove();
 			}
 		}
 	}
+	
+	/*Agrega la persona si es mayor de 60
+	 * verifica que la vacuna solo sea Sputnik o Pfizer
+	 * Y Ademas que la fecha del turno no este vencida la vacuna
+	 *Sino agrega el turno devuelve false para no sumar un cupo por dia*/
 	private boolean TurnoMAyor60(Persona persona, Fecha fechainicial) {
 		int j=0; 
 		boolean SeAgrego = false;
@@ -355,7 +383,7 @@ public class CentroVacunacion {
 		
 	
 		
-	// Disminuye 1 la cantidad de Vacuna.Si la cantidad es 0 borra de la lista
+	// Disminuye 1 la cantidad de Vacuna.Si la cantidad es 0 borra de la lista la vacuna
 	private void CambiarContVacuna(int pos) {
 		VacunasDisponibles.get(pos).setCantidad(VacunasDisponibles.get(pos).getCantidad()-1);
 		if (VacunasDisponibles.get(pos).getCantidad() == 0)
