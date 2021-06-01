@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Iterator;
 
 public class CentroVacunacion {
+	
 	private String Nombre;
 	private int CapacidadXdia;
 	private ArrayList<Persona> Inscriptos;
@@ -45,7 +46,7 @@ public class CentroVacunacion {
 		boolean SeGuardo = false;
 		
 
-		try {
+	/*	try {
 			if (cantidad <= 0) 
 			fail("No se puede ingresar valores cero o negativos");
 
@@ -58,6 +59,12 @@ public class CentroVacunacion {
 			fail("La fecha es Posterior del dia de hoy");
 			} catch (RuntimeException e) { }			
 		}
+		*/
+		
+		if(cantidad<=0)
+			System.out.println("No se puede ingresar valores cero o negativos");
+		if (!fechaIngreso.anterior(Fecha.hoy()))
+			System.out.println(("La fecha es Posterior del dia de hoy"));
 		
 		if (nombreVacuna.equals("Sputnik")) {
 			Vacuna nuevaVacuna = new Sputnik(nombreVacuna, cantidad, fechaIngreso);
@@ -341,7 +348,7 @@ public class CentroVacunacion {
 		
 		while(Iterador.hasNext()) {
 			Vacuna V = (Vacuna) Iterador.next();
-			if (V.getNombreVacuna().equals("pfizer") && V.getVencimiento().anterior(Fecha.hoy())) {
+			if (V.getNombreVacuna().equals("Pfizer") && V.getVencimiento().anterior(Fecha.hoy())) {
 				vacuna.setCantidad(vacuna.getCantidad()- V.getCantidad());
 				Iterador.remove();
 
@@ -353,10 +360,11 @@ public class CentroVacunacion {
 		}
 	}
 	
-	/*Agrega la persona si es mayor de 60
-	 * verifica que la vacuna solo sea Sputnik o Pfizer
-	 * Y Ademas que la fecha del turno no este vencida la vacuna
-	 *Sino agrega el turno devuelve false para no sumar un cupo por dia*/
+	/*-Agrega la persona si es mayor de 60
+	  -verifica que la vacuna solo sea Sputnik o Pfizer
+	  -Y Ademas que la fecha del turno no este vencida la vacuna
+	  -Sino agrega el turno devuelve false para no sumar un cupo por dia*/
+	
 	private boolean TurnoMAyor60(Persona persona, Fecha fechainicial) {
 		int j=0; 
 		boolean SeAgrego = false;
@@ -390,4 +398,9 @@ public class CentroVacunacion {
 			VacunasDisponibles.remove(pos);
 	}
 	
+	@Override
+	//a completar
+	public String toString() {
+		return "" + Nombre + "  Capacidad de vacunaciones por dia : " + CapacidadXdia ;
+	}
 }

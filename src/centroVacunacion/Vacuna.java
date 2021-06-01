@@ -47,6 +47,12 @@ public class Vacuna {
 		Vencimiento = vencimiento;
 	}
 
+	@Override
+	public String toString() {
+		return "Esta vacuna es : " + nombreVacuna + " Contamos con un total de: " + cantidad + "ingresaron :" + fechaIngreso
+				+ "su fecha de vencimiento es : " + Vencimiento  ;
+	}
+
 
 	
 
