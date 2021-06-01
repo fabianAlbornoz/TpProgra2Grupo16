@@ -12,7 +12,7 @@ public class AstraZeneca extends Vacuna{
 
 	@Override
 	public String toString() {
-		return  super.toString();
+		return  super.toString(); //utilizamos el de la superclase
 	}
 
 }

@@ -4,7 +4,7 @@ public class Principal {
 
 	public static void main(String[] args) {
 		Fecha fTurnos = new Fecha(15, 7, 2021);
-		CentroVacunacion centro = new CentroVacunacion("UNGS", 5);
+		CentroVacunacion centro = new CentroVacunacion("UNIVERSIDAD NACIONAL GENERAL SARMIENTO", 5);
 
 		System.out.println("------------ Creacion -------------");
 		System.out.println(centro);
