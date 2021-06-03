@@ -16,7 +16,7 @@ public class CentroVacunacion {
 	private ArrayList<Persona> Inscriptos;
 	private ArrayList<Vacuna> VacunasDisponibles;
 	private LinkedList<Turno> CalendarioVacunacion;
-	private LinkedList Reporte;
+	private HashMap<Integer,String> Vacunados;
 	private Vacuna vacuna;
 	
 	
@@ -31,7 +31,7 @@ public class CentroVacunacion {
 		this.Inscriptos = new ArrayList();
 		this.VacunasDisponibles = new ArrayList();
 		this.CalendarioVacunacion = new LinkedList<Turno>();
-		this.Reporte = new LinkedList();
+		this.Vacunados = new HashMap();
 		this.vacuna = new Vacuna(null, 0 , null);
 
 	}
@@ -46,7 +46,7 @@ public class CentroVacunacion {
 		boolean SeGuardo = false;
 		
 
-	/*	try {
+		try {
 			if (cantidad <= 0) 
 			fail("No se puede ingresar valores cero o negativos");
 
@@ -59,12 +59,12 @@ public class CentroVacunacion {
 			fail("La fecha es Posterior del dia de hoy");
 			} catch (RuntimeException e) { }			
 		}
-		*/
 		
-		if(cantidad<=0)
-			System.out.println("No se puede ingresar valores cero o negativos");
-		if (!fechaIngreso.anterior(Fecha.hoy()))
-			System.out.println(("La fecha es Posterior del dia de hoy"));
+		
+		//if(cantidad<=0)
+	//		System.out.println("No se puede ingresar valores cero o negativos");
+		//if (!fechaIngreso.anterior(Fecha.hoy()))
+		//	System.out.println(("La fecha es Posterior del dia de hoy"));
 		
 		if (nombreVacuna.equals("Sputnik")) {
 			Vacuna nuevaVacuna = new Sputnik(nombreVacuna, cantidad, fechaIngreso);
@@ -295,12 +295,18 @@ public class CentroVacunacion {
 	* para la fecha pasada por parámetro.* Si no hay turnos asignados para ese día,
 	 se debedevolver una lista vacía.
 	* La cantidad de turnos no puede exceder la capacidadpor día de la ungs.*/
+	
 	public ArrayList<Integer> turnosConFecha(Fecha fecha){
 		ArrayList<Integer> lista = new ArrayList<Integer>();
+		for(Turno f: CalendarioVacunacion) {
+			if(fecha.equals(f.getFecha()) && lista.size()<=CapacidadXdia) {
+				lista.add(f.getPersona().getDni());
+			}
+		}
 		return lista;
 	}
 
-	
+			
 	/*** Dado el DNI de la persona y la fecha de vacunación*
 	*se valida que esté inscripto y que tenga turno para ese dia.*
 	*-Si tiene turno y está inscripto se debe registrarla persona como*
@@ -308,14 +314,23 @@ public class CentroVacunacion {
 	*-Si no está inscripto o no tiene turno ese día,se genera una Excepcion.*/
 	
 	public void vacunarInscripto(int dni, Fecha fechaVacunacion) {
-		
+		HashMap<Integer,String> dicc= new HashMap<Integer,String>();
+		ArrayList<Integer> ca= new ArrayList<Integer>();
+		ca= turnosConFecha(fechaVacunacion);
+		for(Map.Entry<Integer,String> d : Vacunados.entrySet()) {
+			for(Integer tur : ca) {
+				if (! d.getKey().equals(tur)) {
+			//		Vacunados.put(tur,NombreVacuna)
+						
+			}
 	}
-	
+		}
+	}
 	/* Devuelve un Diccionario donde*-la clave es el dni de las personas vacunadas
 	 *-Y, el valor es el nombre de la vacuna aplicada.*/
 	public Map<Integer, String> reporteVacunacion(){
-		Map<Integer,String> coso = new HashMap<Integer, String>();
-		return coso;
+		Map<Integer,String> report = new HashMap<Integer, String>();
+		return report;
 	}
 
 	/*** Devuelve en O(1) un Diccionario:*-clave: nombre de la vacuna
@@ -325,6 +340,9 @@ public class CentroVacunacion {
 		return coso;
 	}
 
+	
+	
+	
 //---------------------------------- metodos de metodos -------------------------------------------------	
 	
 	// Borra el turno y agrega Vacuna al stock al principio de la lista
@@ -397,6 +415,23 @@ public class CentroVacunacion {
 		if (VacunasDisponibles.get(pos).getCantidad() == 0)
 			VacunasDisponibles.remove(pos);
 	}
+	
+	//Devuelve el nombre de la vacuna
+	
+	private String  nombreVacuna (int dni) {
+		for(Turno f: CalendarioVacunacion) {
+			if(f.getPersona().getDni() == dni) {
+				return f.getVacuna().getNombreVacuna();
+			
+			
+			}
+		}
+		return "";
+	}
+	
+		
+	
+	
 	
 	@Override
 	//a completar
