@@ -46,8 +46,12 @@ public class Vacuna {
 	public void setVencimiento(Fecha vencimiento) {
 		Vencimiento = vencimiento;
 	}
+	
+	@Override
+	public boolean equals(Object objets) {
 
-
+		return false;
+	}
 	
 
 }

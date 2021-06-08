@@ -2,8 +2,8 @@ package centroVacunacion;
 
 public class Principal {
 
-	public static void main(String[] args) {
-		Fecha fTurnos = new Fecha(15, 7, 2021);
+	public static void main(String[] ar0gs) {
+		Fecha fTurnos = new Fecha(15, 5, 2021);
 		CentroVacunacion centro = new CentroVacunacion("UNGS", 5);
 
 		System.out.println("------------ Creacion -------------");
@@ -13,7 +13,7 @@ public class Principal {
 
 		centro.ingresarVacunas("Moderna", 10, new Fecha(15,5,2021));
 		centro.ingresarVacunas("Pfizer", 10, new Fecha(15,5,2021));
-		centro.ingresarVacunas("Pfizer", 0, new Fecha(15,5,2021));
+
 
 
 		
@@ -24,7 +24,7 @@ public class Principal {
 		centro.inscribirPersona(29223000, new Fecha(2, 5, 1982), false, true);
 		centro.inscribirPersona(13000000, new Fecha(1, 5, 1958), true, false);
 		centro.inscribirPersona(13000050, new Fecha(20, 6, 1958), false, true);
-		
+	
 		centro.generarTurnos(fTurnos);
 
 		System.out.println("-------------- Turnos -------------");
@@ -33,11 +33,14 @@ public class Principal {
 		System.out.println();
 		
 		centro.vacunarInscripto(24780201, fTurnos);
+
 		centro.vacunarInscripto(13000000, fTurnos);
 
 		//----------------prueba---------------
-		System.out.println("Vacunas disponibles : " + centro.vacunasDisponibles());
-		System.out.println("chaboncitos inscriptos : " + centro.listaDeEspera().size());
+		Fecha.setFechaHoy(20,4,2021);
+		centro.ingresarVacunas("Pfizer", 10,new Fecha(30,3,2021));
+		centro.ingresarVacunas("Pfizer", 10,new Fecha(20,4,2021));
+
 
 		//----------------------------------------
 		System.out.println("------------- Centro --------------");
