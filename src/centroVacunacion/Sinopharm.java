@@ -7,5 +7,9 @@ public class Sinopharm extends Vacuna{
 		// TODO Auto-generated constructor stub
 		final int temperatura = 3;
 	}
+	@Override
+	public String toString() {
+		return  super.toString();
+	}
 
 }

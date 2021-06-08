@@ -10,5 +10,9 @@ public class Moderna extends Vacuna{
 		final int temperatura= -18;
 		
 	}
+	@Override
+	public String toString() {
+		return  super.toString();
+	}
 
 }

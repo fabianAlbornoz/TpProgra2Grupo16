@@ -18,6 +18,7 @@ public class CentroVacunacion {
 	private LinkedList<Turno> CalendarioVacunacion;
 	private HashMap<Integer,String> Vacunados;
 	private HashMap<String, Integer> VacunasVencidas;
+	private HashMap<Integer,String> Vacunados;
 	private Vacuna vacuna;
 	
 	
@@ -314,6 +315,11 @@ public class CentroVacunacion {
 				if (lista.size() < CapacidadXdia)
 				lista.add(CalendarioVacunacion.get(i).getPersona().getDni());
 		}
+		for(Turno f: CalendarioVacunacion) {
+			if(fecha.equals(f.getFecha()) && lista.size()<=CapacidadXdia) {
+				lista.add(f.getPersona().getDni());
+			}
+		}
 		return lista;
 	}
 
@@ -448,6 +454,28 @@ public class CentroVacunacion {
 			i++;
 		}
 	}
+	
+	@Override
+	//a completar
+	public String toString() {
+		return "" + Nombre + "  Capacidad de vacunaciones por dia : " + CapacidadXdia ;
+	}
+	//Devuelve el nombre de la vacuna
+	
+	private String  nombreVacuna (int dni) {
+		for(Turno f: CalendarioVacunacion) {
+			if(f.getPersona().getDni() == dni) {
+				return f.getVacuna().getNombreVacuna();
+			
+			
+			}
+		}
+		return "";
+	}
+	
+		
+	
+	
 	
 	@Override
 	//a completar

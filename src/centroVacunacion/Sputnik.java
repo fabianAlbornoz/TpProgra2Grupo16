@@ -8,6 +8,10 @@ public class Sputnik extends Vacuna{
 		final int temperatura = 3;
 	}
 
+	@Override
+	public String toString() {
+		return  super.toString();
+	}
 
 
 }

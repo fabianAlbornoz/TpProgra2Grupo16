@@ -48,9 +48,9 @@ public class Vacuna {
 	}
 	
 	@Override
-	public boolean equals(Object objets) {
-
-		return false;
+	public String toString() {
+		return "Esta vacuna es : " + nombreVacuna + " Contamos con un total de: " + cantidad + "ingresaron :" + fechaIngreso
+				+ "su fecha de vencimiento es : " + Vencimiento  ;
 	}
 	
 
