@@ -3,7 +3,7 @@ package centroVacunacion;
 public class Principal {
 
 	public static void main(String[] ar0gs) {
-		Fecha fTurnos = new Fecha(15, 5, 2021);
+		Fecha fTurnos = new Fecha(15, 7, 2021);
 		CentroVacunacion centro = new CentroVacunacion("UNGS", 5);
 
 		System.out.println("------------ Creacion -------------");
@@ -37,9 +37,7 @@ public class Principal {
 		centro.vacunarInscripto(13000000, fTurnos);
 
 		//----------------prueba---------------
-		Fecha.setFechaHoy(20,4,2021);
-		centro.ingresarVacunas("Pfizer", 10,new Fecha(30,3,2021));
-		centro.ingresarVacunas("Pfizer", 10,new Fecha(20,4,2021));
+
 
 
 		//----------------------------------------

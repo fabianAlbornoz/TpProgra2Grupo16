@@ -1,26 +1,16 @@
 package centroVacunacion;
 
 public class Vacuna {
-	private String nombreVacuna;
 	private int cantidad;
 	private Fecha fechaIngreso;
 	private Fecha Vencimiento;
 	
 	
-	public Vacuna(String nombreVacuna, int cantidad, Fecha fechaIngreso) {
-		this.nombreVacuna = nombreVacuna;
+	public Vacuna(int cantidad, Fecha fechaIngreso) {
 		this.cantidad = cantidad;
 		this.fechaIngreso = fechaIngreso;
 		this.Vencimiento = null;
 		
-	}
-		
-	public String getNombreVacuna() {
-		return nombreVacuna;
-	}
-
-	public void setNombreVacuna(String nombreVacuna) {
-		this.nombreVacuna = nombreVacuna;
 	}
 
 	public int getCantidad() {
@@ -47,9 +37,16 @@ public class Vacuna {
 		Vencimiento = vencimiento;
 	}
 	
+	
+	@Override
+	public boolean equals(Object obj) {
+		return this.getClass().getSimpleName().equals(obj);
+	}
+	
+	
 	@Override
 	public String toString() {
-		return "Esta vacuna es : " + nombreVacuna + " Contamos con un total de: " + cantidad + "ingresaron :" + fechaIngreso
+		return "Esta vacuna es : " + this.getClass().getSimpleName() + " Contamos con un total de: " + cantidad + "ingresaron :" + fechaIngreso
 				+ "su fecha de vencimiento es : " + Vencimiento  ;
 	}
 	

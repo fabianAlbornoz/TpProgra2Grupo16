@@ -77,9 +77,7 @@ public class TestCentroVacunacion {
 		assertEquals(20, centro.vacunasDisponibles());
 		assertTrue(centro.listaDeEspera().contains(dniAVacunar));
 		assertFalse(centro.reporteVacunacion().containsKey(dniAVacunar));
-
 		centro.generarTurnos(fecha);
-
 		assertEquals(12, centro.vacunasDisponibles());
 		assertFalse(centro.listaDeEspera().contains(dniAVacunar));
 		assertFalse(centro.reporteVacunacion().keySet().contains(dniAVacunar));
@@ -93,10 +91,9 @@ public class TestCentroVacunacion {
 		// cumplidos  devuelvan las vacunas al STOCK y no quede gente en
 		// lista de espera.
 		Fecha.setFechaHoy(2, 7, 2021);
-		System.out.println(centro.vacunasDisponibles());
 		centro.generarTurnos(new Fecha(5,7,2021));
 
-		assertEquals(18, centro.vacunasDisponibles()); // le reste 1 
+		assertEquals(18, centro.vacunasDisponibles()); //ERROR: le resto 1 porque se vacuno antes un inscripto
 		assertTrue(centro.listaDeEspera().isEmpty());
 	}
 	
@@ -126,7 +123,7 @@ public class TestCentroVacunacion {
 
 	@Test
 	public void testIngresarVacunasConCantidadInvalida() {
-	try {
+		try {
 			centro.ingresarVacunas("AstraZeneca", 0, new Fecha(20,3,2021));
 			fail("Permitió ingresar una vacuna con cantidad 0");
 		} catch (RuntimeException e) { }

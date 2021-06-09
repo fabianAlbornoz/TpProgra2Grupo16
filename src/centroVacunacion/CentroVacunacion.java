@@ -18,7 +18,6 @@ public class CentroVacunacion {
 	private LinkedList<Turno> CalendarioVacunacion;
 	private HashMap<Integer,String> Vacunados;
 	private HashMap<String, Integer> VacunasVencidas;
-	private HashMap<Integer,String> Vacunados;
 	private Vacuna vacuna;
 	
 	
@@ -37,7 +36,7 @@ public class CentroVacunacion {
 		this.VacunasVencidas = new HashMap();
 		VacunasVencidas.put("Pfizer", 0);
 		VacunasVencidas.put("Moderna", 0);
-		this.vacuna = new Vacuna(null, 0 , null);
+		this.vacuna = new Vacuna(0 , null);
 
 	}
 	
@@ -66,12 +65,12 @@ public class CentroVacunacion {
 		}
 
 		if (nombreVacuna.toLowerCase().equals("sputnik")) {
-			Vacuna nuevaVacuna = new Sputnik(nombreVacuna.toLowerCase(), cantidad, nueva);
+			Vacuna nuevaVacuna = new Sputnik(cantidad, nueva);
 			 SeGuardo = VacunasDisponibles.add(nuevaVacuna);
 		}
 		
 		if (nombreVacuna.toLowerCase().equals("pfizer")) {
-			Vacuna nuevaVacuna = new Pfizer(nombreVacuna.toLowerCase(), cantidad, nueva);
+			Vacuna nuevaVacuna = new Pfizer(cantidad, nueva);
 			SeGuardo = VacunasDisponibles.add(nuevaVacuna);
 			Fecha facha = new Fecha(fechaIngreso);
 			for(int i = 0; i <=30; i++) {
@@ -82,7 +81,7 @@ public class CentroVacunacion {
 		}
 		
 		if (nombreVacuna.toLowerCase().equals("moderna")) {
-			Vacuna nuevaVacuna = new Moderna(nombreVacuna.toLowerCase(), cantidad,nueva);			
+			Vacuna nuevaVacuna = new Moderna(cantidad,nueva);			
 			SeGuardo = VacunasDisponibles.add(nuevaVacuna);
 			Fecha facha = new Fecha(fechaIngreso);
 			for(int i = 0; i <=60; i++) {
@@ -92,13 +91,13 @@ public class CentroVacunacion {
 		}	
 		
 		if (nombreVacuna.toLowerCase().equals("sinopharm")) {
-			Vacuna nuevaVacuna = new Sinopharm(nombreVacuna.toLowerCase(), cantidad, nueva);
+			Vacuna nuevaVacuna = new Sinopharm(cantidad, nueva);
 			SeGuardo = VacunasDisponibles.add(nuevaVacuna);
 
 		}
 		
-		if (nombreVacuna.toLowerCase().equals("astraZeneca")) {
-			Vacuna nuevaVacuna = new AstraZeneca(nombreVacuna.toLowerCase(), cantidad, nueva);
+		if (nombreVacuna.toLowerCase().equals("astrazeneca")) {
+			Vacuna nuevaVacuna = new AstraZeneca(cantidad, nueva);
 			SeGuardo = VacunasDisponibles.add(nuevaVacuna);
 		}
 		
@@ -129,7 +128,7 @@ public class CentroVacunacion {
 	public int vacunasDisponibles(String nombreVacuna) {
 		int suma = 0;
 		for(Vacuna vac: VacunasDisponibles) {
-			if (vac.getNombreVacuna().equals(nombreVacuna)) {
+			if (vac.equals(nombreVacuna)) {
 				suma+= vac.getCantidad();
 			}
 		}
@@ -268,15 +267,16 @@ public class CentroVacunacion {
 			if(Inscriptos.get(i).getEdad() >= 60) {
 				if (TurnoMAyor60(Inscriptos.get(i), nueva)) {
 					Inscriptos.remove(i);
-					Cupos++;}
-				else i++;
+					Cupos++;
+					i--;}
 			}
 			else {
 					int j = 0;
 					boolean NoVence = false;
 
 					//Verifica que la fecha del turno sea menor a la del vencimiento de la vacuna Moderna
-					while(j <VacunasDisponibles.size() && !NoVence && VacunasDisponibles.get(j).getNombreVacuna().equals("Moderna")) {
+					String obj = "Moderna";
+					while(j <VacunasDisponibles.size() && !NoVence && VacunasDisponibles.get(j).equals(obj)) {
 							if(!nueva.posterior(VacunasDisponibles.get(j).getVencimiento())) {
 								NoVence = true;
 						}
@@ -285,19 +285,21 @@ public class CentroVacunacion {
 					
 					if (j <VacunasDisponibles.size() ) {
 						Fecha otra= new Fecha(nueva);
-						Vacuna vac = new Vacuna(VacunasDisponibles.get(j).getNombreVacuna(),1, VacunasDisponibles.get(j).getFechaIngreso());
+						Vacuna vac = new Vacuna(1, VacunasDisponibles.get(j).getFechaIngreso());
 						CalendarioVacunacion.add(new Turno(Inscriptos.get(i), vac,otra));
 						CambiarContVacuna(j);
 						vacuna.setCantidad(vacuna.getCantidad()-1);
 						Inscriptos.remove(i);
 						Cupos++;
+						i--;
 					}
-					else i++;
+				
 				}
 			if(Cupos == CapacidadXdia) {
 				nueva.avanzarUnDia();
 				Cupos = 0;
 			}
+			i++;
 			
 			
 		}
@@ -314,12 +316,9 @@ public class CentroVacunacion {
 			if (CalendarioVacunacion.get(i).getFecha().equals(fecha)) 
 				if (lista.size() < CapacidadXdia)
 				lista.add(CalendarioVacunacion.get(i).getPersona().getDni());
+			
 		}
-		for(Turno f: CalendarioVacunacion) {
-			if(fecha.equals(f.getFecha()) && lista.size()<=CapacidadXdia) {
-				lista.add(f.getPersona().getDni());
-			}
-		}
+
 		return lista;
 	}
 
@@ -366,7 +365,9 @@ public class CentroVacunacion {
 	
 	// Borra el turno y agrega Vacuna al stock al principio de la lista
 	private void BorrarTurnoVencidos() {
+
 		int i = 0;
+		
 		while(i < CalendarioVacunacion.size()) {
 			if (CalendarioVacunacion.get(i).getFecha().anterior(Fecha.hoy())){
 				VacunasDisponibles.add(CalendarioVacunacion.get(i).getVacuna());
@@ -387,15 +388,17 @@ public class CentroVacunacion {
 			
 			Vacuna V = (Vacuna) Iterador.next();
 			
-			if (V.getNombreVacuna().equals("Pfizer") && V.getVencimiento().anterior(Fecha.hoy())) {
+			String obj = "Pfizer";
+			if (V.equals(obj) && V.getVencimiento().anterior(Fecha.hoy())) {
 				vacuna.setCantidad(vacuna.getCantidad()- V.getCantidad());
-				VacunasVencidas.replace("Pfizer", VacunasVencidas.get("Pfizer") + V.getCantidad()); // suma el contador de las vacunas vencidas;
+				VacunasVencidas.replace(obj, VacunasVencidas.get(obj) + V.getCantidad()); // suma el contador de las vacunas vencidas;
 				Iterador.remove();
 			}
 			
-			if (V.getNombreVacuna().equals("Moderna") && V.getVencimiento().anterior(Fecha.hoy())) {
+			String obj2 = "Moderna";
+			if (V.equals(obj2) && V.getVencimiento().anterior(Fecha.hoy())) {
 				vacuna.setCantidad(vacuna.getCantidad()- V.getCantidad());
-				VacunasVencidas.replace("Moderna", VacunasVencidas.get("Moderna") + V.getCantidad()); // suma el contador de las vacunas vencidas;
+				VacunasVencidas.replace(obj2, VacunasVencidas.get(obj2) + V.getCantidad()); // suma el contador de las vacunas vencidas;
 				Iterador.remove();
 			}
 		}
@@ -411,16 +414,17 @@ public class CentroVacunacion {
 		boolean SeAgrego = false;
 		while(j < VacunasDisponibles.size() && !SeAgrego) {
 			Fecha otra= new Fecha(fechainicial);
-				if(VacunasDisponibles.get(j).getNombreVacuna().equals("Pfizer") && VacunasDisponibles.get(j).getVencimiento().posterior(fechainicial)) {
-					Vacuna vac = new Vacuna(VacunasDisponibles.get(j).getNombreVacuna(),1, VacunasDisponibles.get(j).getFechaIngreso());
+				String obj = "Pfizer";
+				if(VacunasDisponibles.get(j).equals(obj) && VacunasDisponibles.get(j).getVencimiento().posterior(fechainicial)) {
+					Vacuna vac = new Vacuna(1, VacunasDisponibles.get(j).getFechaIngreso());
 					CalendarioVacunacion.add(new Turno(persona, vac,otra));
 					CambiarContVacuna(j);
 					vacuna.setCantidad(vacuna.getCantidad()-1);
 					SeAgrego = true;
-
 				}
-				if(VacunasDisponibles.get(j).getNombreVacuna().equals("Sputnik")) {
-					Vacuna vac = new Vacuna(VacunasDisponibles.get(j).getNombreVacuna(),1, VacunasDisponibles.get(j).getFechaIngreso());
+				String obj2 = "Sputnik";
+				if(VacunasDisponibles.get(j).equals(obj2)) {
+					Vacuna vac = new Vacuna(1, VacunasDisponibles.get(j).getFechaIngreso());
 					CalendarioVacunacion.add(new Turno(persona, vac,otra));
 					CambiarContVacuna(j);
 					vacuna.setCantidad(vacuna.getCantidad()-1);
@@ -446,7 +450,7 @@ public class CentroVacunacion {
 		boolean seVacuno = false;
 		while(!seVacuno && i< CalendarioVacunacion.size()) {
 			if(CalendarioVacunacion.get(i).getPersona().getDni() == dni) {
-				Vacunados.put(dni, CalendarioVacunacion.get(i).getVacuna().getNombreVacuna());
+				Vacunados.put(dni, CalendarioVacunacion.get(i).getVacuna().getClass().getSimpleName());
 				vacuna.setCantidad(vacuna.getCantidad()-1);
 				CalendarioVacunacion.remove(i);
 				seVacuno = true;
@@ -454,29 +458,7 @@ public class CentroVacunacion {
 			i++;
 		}
 	}
-	
-	@Override
-	//a completar
-	public String toString() {
-		return "" + Nombre + "  Capacidad de vacunaciones por dia : " + CapacidadXdia ;
-	}
-	//Devuelve el nombre de la vacuna
-	
-	private String  nombreVacuna (int dni) {
-		for(Turno f: CalendarioVacunacion) {
-			if(f.getPersona().getDni() == dni) {
-				return f.getVacuna().getNombreVacuna();
-			
-			
-			}
-		}
-		return "";
-	}
-	
-		
-	
-	
-	
+
 	@Override
 	//a completar
 	public String toString() {
