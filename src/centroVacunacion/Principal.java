@@ -33,7 +33,6 @@ public class Principal {
 		System.out.println();
 		
 		centro.vacunarInscripto(24780201, fTurnos);
-
 		centro.vacunarInscripto(13000000, fTurnos);
 
 		//----------------prueba---------------

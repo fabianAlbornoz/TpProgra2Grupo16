@@ -10,9 +10,10 @@ public class Pfizer extends Vacuna{
 		final int  temperatura= -18;
 		
 	}
+	
 	@Override
 	public String toString() {
-		return  super.toString();
+		return "Pfizer se almacena a: " + temperatura;
 	}
 
 

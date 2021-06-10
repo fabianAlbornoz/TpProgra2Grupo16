@@ -13,7 +13,7 @@ public class CentroVacunacion {
 	
 	private String Nombre;
 	private int CapacidadXdia;
-	private ArrayList<Persona> Inscriptos;
+	private ArrayList<Persona> Inscriptos; //lista de espera
 	private ArrayList<Vacuna> VacunasDisponibles;
 	private LinkedList<Turno> CalendarioVacunacion;
 	private HashMap<Integer,String> Vacunados;
@@ -128,7 +128,8 @@ public class CentroVacunacion {
 	public int vacunasDisponibles(String nombreVacuna) {
 		int suma = 0;
 		for(Vacuna vac: VacunasDisponibles) {
-			if (vac.equals(nombreVacuna)) {
+			String nombreVacuna2 = nombreVacuna;
+			if (vac.equals(nombreVacuna2)) {
 				suma+= vac.getCantidad();
 			}
 		}
@@ -149,12 +150,6 @@ public class CentroVacunacion {
 				
 		int edad = Fecha.diferenciaAnios(Fecha.hoy() , nacimiento);
 		Persona nueva = new Persona(dni,edad,tienePadecimientos,esEmpleadoSalud);
-		
-/*		if (edad>= 60 && esEmpleadoSalud) {
-			try {
-				fail("Personas mayores 60 no deben trabajar sector salud");
-			} catch (RuntimeException e) { }
-		}*/
 		
 		try {
 				if (edad< 18)
@@ -283,7 +278,7 @@ public class CentroVacunacion {
 						j++;					
 					}
 					
-					if (j <VacunasDisponibles.size() ) {
+					if (j <VacunasDisponibles.size() && NoVence) {
 						Fecha otra= new Fecha(nueva);
 						Vacuna vac = new Vacuna(1, VacunasDisponibles.get(j).getFechaIngreso());
 						CalendarioVacunacion.add(new Turno(Inscriptos.get(i), vac,otra));
@@ -413,8 +408,10 @@ public class CentroVacunacion {
 		int j=0; 
 		boolean SeAgrego = false;
 		while(j < VacunasDisponibles.size() && !SeAgrego) {
+				
 			Fecha otra= new Fecha(fechainicial);
 				String obj = "Pfizer";
+
 				if(VacunasDisponibles.get(j).equals(obj) && VacunasDisponibles.get(j).getVencimiento().posterior(fechainicial)) {
 					Vacuna vac = new Vacuna(1, VacunasDisponibles.get(j).getFechaIngreso());
 					CalendarioVacunacion.add(new Turno(persona, vac,otra));
@@ -459,9 +456,16 @@ public class CentroVacunacion {
 		}
 	}
 
+	
 	@Override
 	//a completar
 	public String toString() {
-		return "" + Nombre + "  Capacidad de vacunaciones por dia : " + CapacidadXdia ;
+		return ""+Nombre + 
+				"\nCapacidad de vacunaciones por dia : " + CapacidadXdia +
+				"\nVacunas Disponibles : " + vacunasDisponibles() + 
+				"\nPersonas en lista de espera: " + Inscriptos.size() + 
+				"\nTurnos asignados : " + CalendarioVacunacion.size() +
+				"\nVacunas aplicadas: " + Vacunados.size();
+				
 	}
 }

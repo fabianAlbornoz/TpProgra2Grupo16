@@ -1,7 +1,9 @@
 package centroVacunacion;
 
 public class Sputnik extends Vacuna{
-		
+	
+	private int temperatura;
+
 	public Sputnik(int cantidad, Fecha fechaIngreso) {
 		super(cantidad, fechaIngreso);
 		// TODO Auto-generated constructor stub
@@ -10,7 +12,7 @@ public class Sputnik extends Vacuna{
 
 	@Override
 	public String toString() {
-		return  super.toString();
+		return "Sputnik se almacena a: " + temperatura;
 	}
 
 

@@ -12,7 +12,8 @@ public class Moderna extends Vacuna{
 	}
 	@Override
 	public String toString() {
-		return  super.toString();
+		return "Moderna se almacena a: " + temperatura;
 	}
+
 
 }

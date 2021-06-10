@@ -2,7 +2,7 @@ package centroVacunacion;
 
 public class AstraZeneca extends Vacuna{
 
-	
+	private int temperatura;
 
 	public AstraZeneca(int cantidad, Fecha fechaIngreso) {
 		super(cantidad, fechaIngreso);
@@ -12,7 +12,7 @@ public class AstraZeneca extends Vacuna{
 
 	@Override
 	public String toString() {
-		return  super.toString(); //utilizamos el de la superclase
+		return "AstraZeneca se almacena a: " + temperatura;
 	}
 
 }
